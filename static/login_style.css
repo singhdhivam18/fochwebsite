@@ -1,0 +1,441 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+:root {
+  --bg:          #f5f2ed;
+  --panel-bg:    #1a1612;
+  --white:       #ffffff;
+  --surface:     #f0ece5;
+  --border:      #ddd8cf;
+  --text:        #1a1612;
+  --muted:       #8a8278;
+  --accent:      #b8860b;
+  --accent-lt:   #d4a017;
+  --accent-glow: rgba(184,134,11,0.13);
+  --error:       #c0392b;
+  --error-bg:    #fdf2f0;
+  --success:     #1a7a4a;
+  --success-bg:  #f0faf4;
+  --ff-d:        'DM Serif Display', serif;
+  --ff-m:        'DM Mono', monospace;
+  --r:           10px;
+  --sh:          0 2px 14px rgba(0,0,0,0.07);
+}
+ 
+html, body { height: 100%; }
+ 
+body {
+  font-family: var(--ff-m);
+  background: var(--bg);
+  color: var(--text);
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  min-height: 100vh;
+}
+ 
+/* ══════════════════
+   LEFT PANEL
+══════════════════ */
+.left {
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 44px 40px;
+  position: relative;
+  overflow: hidden;
+}
+ 
+.left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+ 
+.left::after {
+  content: '';
+  position: absolute;
+  width: 340px; height: 340px;
+  background: radial-gradient(circle, rgba(184,134,11,0.11) 0%, transparent 70%);
+  bottom: 40px; left: -80px;
+  pointer-events: none;
+}
+ 
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+ 
+.logo-box {
+  width: 38px; height: 38px;
+  border: 1px solid rgba(184,134,11,0.45);
+  border-radius: 8px;
+  background: rgba(184,134,11,0.07);
+  display: flex; align-items: center; justify-content: center;
+}
+ 
+.logo-name {
+  font-family: var(--ff-d);
+  font-size: 22px;
+  color: #f0ece5;
+  letter-spacing: 0.1em;
+}
+ 
+.logo-name span { color: var(--accent-lt); }
+ 
+.left-body { position: relative; z-index: 1; }
+ 
+.tagline {
+  font-family: var(--ff-d);
+  font-size: clamp(34px, 3.2vw, 50px);
+  font-weight: 400;
+  line-height: 1.2;
+  color: #f0ece5;
+  margin-bottom: 18px;
+}
+ 
+.tagline em { font-style: italic; color: var(--accent-lt); }
+ 
+.tagline-sub {
+  font-size: 12px;
+  color: #6a6460;
+  line-height: 1.9;
+  letter-spacing: 0.03em;
+}
+ 
+.left-foot {
+  font-size: 11px;
+  color: #3a3632;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+ 
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+  animation: blink 2.5s ease infinite;
+}
+ 
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+ 
+/* ══════════════════
+   RIGHT PANEL
+══════════════════ */
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  overflow-y: auto;
+}
+ 
+.box {
+  width: 100%;
+  max-width: 360px;
+  animation: up 0.42s ease both;
+}
+ 
+@keyframes up {
+  from { opacity:0; transform:translateY(14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+ 
+/* ══════════════════
+   TABS  — fixed height so pill never overflows
+══════════════════ */
+.tabs {
+  position: relative;
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 4px;
+  margin-bottom: 28px;
+  height: 44px;
+  overflow: hidden;
+}
+ 
+.tab {
+  flex: 1;
+  padding: 9px 0;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 11px;
+  font-family: var(--ff-m);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 7px;
+  position: relative;
+  z-index: 2;            /* ← tabs sit above the pill */
+  transition: color 0.2s;
+}
+ 
+.tab.active { color: var(--text); }
+ 
+.pill {
+  position: absolute;
+  top: 4px; left: 4px;
+  width: calc(50% - 8px);
+  height: calc(100% - 8px);
+  background: var(--white);
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  z-index: 1;            /* ← pill sits below tab text */
+}
+ 
+.pill.right { transform: translateX(calc(100% + 8px)); }
+ 
+/* ══════════════════
+   PANELS
+══════════════════ */
+.panel { display: none; flex-direction: column; gap: 15px; }
+.panel.active { display: flex; animation: fadeIn 0.26s ease both; }
+ 
+@keyframes fadeIn {
+  from { opacity:0; transform:translateY(6px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+ 
+.panel-badge {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+ 
+.panel-badge::before {
+  content: '';
+  display: block;
+  width: 18px; height: 1px;
+  background: var(--accent);
+}
+ 
+.panel-title {
+  font-family: var(--ff-d);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.2;
+  margin-top: -4px;
+}
+ 
+.panel-sub {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+  margin-top: -6px;
+  margin-bottom: 4px;
+}
+ 
+/* ══════════════════
+   FIELDS
+══════════════════ */
+.field { display: flex; flex-direction: column; gap: 6px; }
+ 
+.field label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+ 
+.wrap { position: relative; display: flex; align-items: center; }
+ 
+.ico {
+  position: absolute;
+  left: 12px;
+  color: var(--muted);
+  display: flex; align-items: center;
+  pointer-events: none;
+}
+ 
+.wrap input {
+  width: 100%;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 40px 12px 36px;
+  font-size: 13px;
+  font-family: var(--ff-m);
+  color: var(--text);
+  box-shadow: var(--sh);
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+ 
+.wrap input::placeholder { color: #c0bab0; }
+ 
+.wrap input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow), var(--sh);
+}
+ 
+.wrap input.err {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(192,57,43,0.08);
+}
+ 
+.wrap input.ok {
+  border-color: var(--success);
+  box-shadow: 0 0 0 3px rgba(26,122,74,0.08);
+}
+ 
+.eye {
+  position: absolute;
+  right: 11px;
+  background: none; border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 2px; line-height: 1;
+  display: flex; align-items: center;
+  transition: color 0.15s;
+}
+ 
+.eye:hover { color: var(--accent); }
+ 
+/* strength bar — always visible so confirm field doesn't jump */
+.sbar { display: flex; gap: 4px; margin-top: 2px; }
+ 
+.seg {
+  flex: 1; height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 0.25s;
+}
+ 
+.seg.w { background: var(--error); }
+.seg.m { background: var(--accent); }
+.seg.s { background: var(--success); }
+ 
+.stxt {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  min-height: 14px;
+}
+ 
+/* ══════════════════
+   MESSAGES
+══════════════════ */
+.msg {
+  font-size: 12px;
+  padding: 10px 13px;
+  border-radius: 8px;
+  display: none;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+}
+ 
+.msg.error {
+  display: block;
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1px solid rgba(192,57,43,0.2);
+}
+ 
+.msg.success {
+  display: block;
+  color: var(--success);
+  background: var(--success-bg);
+  border: 1px solid rgba(26,122,74,0.2);
+}
+ 
+/* ══════════════════
+   BUTTON
+══════════════════ */
+.btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--text);
+  border: none;
+  border-radius: var(--r);
+  color: var(--bg);
+  font-size: 12px;
+  font-family: var(--ff-m);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+}
+ 
+.btn:hover:not(:disabled) {
+  background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(184,134,11,0.25);
+}
+ 
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+ 
+@keyframes spin { to { transform: rotate(360deg); } }
+ 
+.spin {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(245,242,237,0.3);
+  border-top-color: var(--bg);
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  display: none;
+}
+ 
+.btn.loading .btn-text { display: none; }
+.btn.loading .spin     { display: block; }
+ 
+.hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  margin-top: 2px;
+}
+ 
+.hint a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  font-weight: 500;
+}
+ 
+/* shake */
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%,60%{transform:translateX(-7px)}
+  40%,80%{transform:translateX(7px)}
+}
+ 
+.shake { animation: shake 0.36s ease; }
+ 
+/* ══════════════════
+   RESPONSIVE
+══════════════════ */
+@media (max-width: 680px) {
+  body { grid-template-columns: 1fr; overflow: auto; }
+  .left { display: none; }
+  .right { min-height: 100vh; padding: 48px 20px 32px; align-items: flex-start; }
+}
