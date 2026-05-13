@@ -1,29 +1,16 @@
-import configparser
+import os
 
-# Create the configparser object
-config = configparser.ConfigParser()
+def get_connection_string():
+    driver = os.environ.get('DB_DRIVER', 'ODBC Driver 17 for SQL SERVER')
+    server = os.environ.get('DB_SERVER')
+    database = os.environ.get('DB_NAME')
+    uid = os.environ.get('DB_USER')
+    password = os.environ.get('DB_PASSWORD')
 
-# Read the config.ini file
-config.read('config.ini')
-
-# Debug print to verify sections
-print("Sections:", config.sections())
-
-# Access values safely
-drive = config['database']['DRIVER']
-server = config['database']['SERVER']
-Database = config['database']['DATABASE']
-uid = config['database']['UID']
-password = config['database']['PWD']
-
-# Construct the connection string
-connectionstring = (
-    f"DRIVER={{{drive}}};"
-    f"SERVER={server};"
-    f"DATABASE={Database};"
-    f"UID={uid};"
-    f"PWD={password};"
-)
-
-print("Connection is successful")
-print(connectionstring)
+    return (
+        f"DRIVER={{{driver}}};"
+        f"SERVER={server};"
+        f"DATABASE={database};"
+        f"UID={uid};"
+        f"PWD={password};"
+    )

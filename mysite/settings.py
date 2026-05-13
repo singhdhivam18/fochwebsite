@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
 DEBUG = True
 
 # Allow Render domain + localhost
-ALLOWED_HOSTS = [".onrender.com", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ['*']  # or your render URL
 
 # Application definition
 INSTALLED_APPS = [
@@ -27,6 +27,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -81,7 +82,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Where collectstatic will put all files
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Optional: if you keep extra static files in a folder
 STATICFILES_DIRS = [
