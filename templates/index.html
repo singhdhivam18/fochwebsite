@@ -13,54 +13,20 @@
 
     <ul class="nav-links">
         <li>Dashboard</li>
-        <li id="nav-ops">Ops</li>
-        <li id="nav-finance">Finance</li>
-        <li id="nav-add-student" onclick="openStudentModal()" style="color: #007bff; font-weight: bold;">+ Add Student</li>
-        <li id="nav-student-records"><a href="students-list">Student Records</a></li>
-        <li id="nav-attendance" style="color: #007bff; font-weight: bold;"><a href="attendance">attendance</a></li>
-        <li id="nav-report"><a href="report" style="color: #007bff; font-weight: bold;">💰 Expense Report</a></li>
-        <li id="nav-referral"><a href="volunteer-panel" style="color: #007bff; font-weight: bold;">referal code generate </a></li>
+        <li>Ops</li>
+        <li>Finance</li>
+        <li onclick="openStudentModal()" style="color: #007bff; font-weight: bold;">+ Add Student</li>
+        <li><a href="students-list">Student Records</a></li>
+        <li  style="color: #007bff; font-weight: bold;" id="attendance-click"><a href="attendance">attendance</a></li>
+        <li>Reports</li>
     </ul>
 
     <div class="user">
-        <span id="nav-username"></span> | <a href="#" class="logout-link" onclick="handleLogout(event)">Logout</a>
+        <!-- REPLACE with this: -->
+        {{ request.user.username }} | <a href="#" class="logout-link" onclick="handleLogout(event)">Logout</a>
     </div>
 </nav>
 
-<!-- Access-denied banner (hidden by default, shown when student tries a blocked URL) -->
-<div id="access-denied-banner" style="display:none; background:#fee2e2; color:#991b1b; padding:10px 20px; text-align:center; font-weight:bold; border-bottom: 2px solid #fca5a5;">
-    ⛔ Access denied — students can only view the Dashboard.
-</div>
-
-<script>
-    // ── Read user info from sessionStorage (set at login) ──────────────────────
-    const userType = sessionStorage.getItem('foch_user_type');
-    const username  = sessionStorage.getItem('foch_username');
-
-    // Show username in navbar
-    const navUser = document.getElementById('nav-username');
-    if (navUser) navUser.textContent = username || '';
-
-    // Show access-denied banner if redirected from a blocked page
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('access_denied') === '1') {
-        document.getElementById('access-denied-banner').style.display = 'block';
-    }
-
-    // ── Hide volunteer-only nav items for students ─────────────────
-    if (userType === 'student') {
-        const volunteerOnlyIds = [
-            'nav-ops', 'nav-finance', 'nav-add-student',
-            'nav-student-records', 'nav-attendance',
-            'nav-report', 'nav-referral'
-        ];
-        volunteerOnlyIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.style.display = 'none';
-        });
-    }
-    // Volunteers see everything — no changes needed
-</script>
 <div class="container">
     <div class="cards">
         <div class="card blue">

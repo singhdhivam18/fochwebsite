@@ -7,6 +7,39 @@
       2. DASHBOARD LOGIC 
       (Triggered by /dashboard)
       ========================================= */
+// ✅ Global API error handler
+async function apiCall(url, method = 'GET', body = null) {
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    };
+    
+    if (body) {
+        options.body = JSON.stringify(body);
+    }
+    
+    const response = await fetch(url, options);
+    const data = await response.json();
+    
+    // 🎯 Handle 401 (Not authenticated)
+    if (response.status === 401) {
+        alert('❌ Session expired. Please login again.');
+        sessionStorage.clear();
+        window.location.href = '/login';
+        return null;
+    }
+    
+    // 🎯 Handle 403 (Access denied)
+    if (response.status === 403) {
+        alert(`❌ Access Denied!\n\n${data.error}\n\nOnly ${data.allowed_types.join(', ').toUpperCase()} can access this.`);
+        console.log('Unauthorized access attempt:', data);
+        return null;
+    }
+    
+    return { status: response.status, data: data };
+}
    async function loadDashboard() {
        const statsContainer = document.getElementById("totalStudents");
        if (!statsContainer) return; // Exit if not on Dashboard page
@@ -424,15 +457,8 @@ async function loadAttendance() {
 
 async function handleLogout(event) {
     event.preventDefault();
-    // Clear any client-side storage
-    sessionStorage.clear();
-    // ── Tell the server to delete the JWT cookie ──────────────────────────
-    // The server calls response.delete_cookie('foch_token') so the
-    // HttpOnly cookie is removed even though JS cannot touch it directly.
-    try {
-        await fetch('/logout_user', { method: 'POST' });
-    } catch (e) {
-        console.warn('Logout request failed, redirecting anyway.');
-    }
-    window.location.href = '/login';
+    sessionStorage.removeItem('foch_logged_in');
+    sessionStorage.removeItem('foch_username');
+    sessionStorage.removeItem('foch_last_login');
+    window.location.href = `${API_BASE_URL}/login`;
 }

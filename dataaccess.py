@@ -118,7 +118,7 @@ def delete_attendence(date):
     try:
         query_attendence_date="""delete from attendence where attendence_date=?"""
         cursor.execute(query_attendence_date,date)
-        cnxn.commit()
+        cursor.commit()
     except Exception as e:
         print(f"Error occurred: {e}")
         cnxn.rollback()
@@ -252,7 +252,7 @@ def put_attendence(data):
                     status=0
                 params=(status,data.get('date'),data_dict.get('studentId'))
                 cursor.execute(query_update,params)
-                cnxn.commit()
+                cursor.commit()
         else:    
             query="""INSERT INTO attendence( has_attendence,attendence_date,inserted_at,inserted_by,student_id) 
                     values (?,?,?,?,?)"""
@@ -419,37 +419,23 @@ def get_username():
         cnxn.close()     
     return username_list
 
-def put_user_login(data, user_type='student', referral_code=None):
-    """Insert new user with user_type and referral code"""
+def put_user_login(data):
     cursor, cnxn = get_connection()
-    print(f"DEBUG: Creating {user_type} user: {data}")
+    print(f"DEBUG: Data recevied from database expenses:")
     try:
-        query = """
-            INSERT INTO user_login(
-                user_name, password_hash, salt, is_active, 
-                created_at, updated_at, last_login, user_type, referral_code_used
-            ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """
-        params = (
-            data.get("user_name"), 
-            data.get("password_hash"), 
-            data.get("salt"),
-            1, 
-            datetime.datetime.now(), 
-            datetime.datetime.now(), 
-            datetime.datetime.now(), 
-            user_type, 
-            referral_code
-        )
-        cursor.execute(query, params)
-        cnxn.commit()
-        print('✅ User created successfully')
+        query="""INSERT INTO user_login(user_name,password_hash,salt,is_active,created_at,updated_at,last_login) values(?,?,?,?,?,?,?)"""
+        params=(data.get("user_name"),data.get("password_hash"),data.get("salt"),1,datetime.datetime.now(),datetime.datetime.now(),datetime.datetime.now())
+        cursor.execute(query,params)
+        
+        cursor.commit()
+        print('data stored successfully')
     except Exception as e:
-        print(f"❌ Error occurred: {e}")
+        print(f"Error occurred: {e}")
         cnxn.rollback()
     finally:
         cursor.close()
-        cnxn.close()
+        cnxn.close()   
+
 def update_last_login(username,time):
     cursor, cnxn = get_connection()
     print(f"DEBUG: Data recevied from database expenses:")
@@ -466,335 +452,22 @@ def update_last_login(username,time):
     finally:
         cursor.close()
         cnxn.close()   
-# ✅ MODIFY existing user_name function to return user_type
+        
 def user_name(username):
-    """Get user details including user_type"""
     cursor, cnxn = get_connection()
-    print(f"DEBUG: Fetching user: {username}")
-    user_detail = {}
+    print(f"DEBUG: Data recevied from database USER_LOGIN :")
+    user_detail=[]
     try:
-        query = """
-            SELECT user_name, password_hash, user_type, referral_code_used 
-            FROM user_login 
-            WHERE user_name=?
-        """
-        cursor.execute(query, (username,))
-        row = cursor.fetchone()
-        if row:
-            user_detail = {
-                'user_name': row.user_name,
-                'password_hash': row.password_hash,
-                'user_type': row.user_type if row.user_type else 'student',
-                'referral_code_used': row.referral_code_used
-            }
+        query="""select user_name,password_hash from user_login where user_name=?"""
+        cursor.execute(query,username)
+        row=cursor.fetchall()
+        for (rows) in row:
+            user_detail.append(rows)
+        print(user_detail)
     except Exception as e:
-        print(f"❌ Error occurred: {e}")
+        print(f"Error occurred: {e}")
+        cnxn.rollback()
     finally:
         cursor.close()
-        cnxn.close()
+        cnxn.close()     
     return user_detail
-
-def check_referral_code(code):
-    """✅ Check if referral code is valid and has uses left"""
-    cursor, cnxn = get_connection()
-    try:
-        query = """
-            SELECT id, times_used, max_uses FROM volunteer_referral_codes 
-            WHERE referral_code=? AND is_active=1 
-            AND times_used < max_uses
-        """
-        cursor.execute(query, (code,))
-        result = cursor.fetchone()
-        return result is not None
-    except Exception as e:
-        print(f"Error checking referral code: {e}")
-        return False
-    finally:
-        cursor.close()
-        cnxn.close()
-
-def use_referral_code(code):
-    """✅ Increment usage count of referral code"""
-    cursor, cnxn = get_connection()
-    try:
-        query = """
-            UPDATE volunteer_referral_codes 
-            SET times_used = times_used + 1 
-            WHERE referral_code=?
-        """
-        cursor.execute(query, (code,))
-        cnxn.commit()
-    except Exception as e:
-        print(f"Error using referral code: {e}")
-        cnxn.rollback()
-    finally:
-        cursor.close()
-        cnxn.close()
-
-def generate_referral_code(created_by):
-    """✅ Generate new referral code for volunteers"""
-    cursor, cnxn = get_connection()
-    try:
-        code = f"VOL-{uuid.uuid4().hex[:8].upper()}"
-        query = """
-            INSERT INTO volunteer_referral_codes(
-                referral_code, created_by, created_at, is_active, max_uses
-            ) VALUES(?, ?, ?, 1, 1)
-        """
-        cursor.execute(query, (code, created_by, datetime.datetime.now()))
-        cnxn.commit()
-        return code
-    except Exception as e:
-        print(f"Error generating code: {e}")
-        cnxn.rollback()
-        return None
-    finally:
-        cursor.close()
-        cnxn.close()
-
-
-# Add these NEW functions at the end
-
-def get_referral_codes_by_creator(created_by):
-    """Get all referral codes created by a volunteer"""
-    cursor, cnxn = get_connection()
-    codes_list = []
-    try:
-        query = """
-            SELECT id, referral_code, created_at, is_active, 
-                   times_used, max_uses 
-            FROM volunteer_referral_codes 
-            WHERE created_by=?
-            ORDER BY created_at DESC
-        """
-        cursor.execute(query, (created_by,))
-        rows = cursor.fetchall()
-        
-        for row in rows:
-            code_dict = {
-                'id': row.id,
-                'code': row.referral_code,
-                'created_at': row.created_at.isoformat() if row.created_at else None,
-                'is_active': row.is_active,
-                'times_used': row.times_used,
-                'max_uses': row.max_uses,
-                'available': row.is_active and row.times_used < row.max_uses
-            }
-            codes_list.append(code_dict)
-    except Exception as e:
-        print(f"Error getting codes: {e}")
-    finally:
-        cursor.close()
-        cnxn.close()
-    return codes_list
-
-def deactivate_referral_code(code):
-    """Deactivate a referral code"""
-    cursor, cnxn = get_connection()
-    try:
-        query = """
-            UPDATE volunteer_referral_codes 
-            SET is_active = 0 
-            WHERE referral_code=?
-        """
-        cursor.execute(query, (code,))
-        cnxn.commit()
-        return True
-    except Exception as e:
-        print(f"Error deactivating code: {e}")
-        cnxn.rollback()
-        return False
-    finally:
-        cursor.close()
-        cnxn.close()
-def count_volunteers():
-    """Count how many volunteers exist in system"""
-    cursor, cnxn = get_connection()
-    try:
-        query = "SELECT COUNT(*) FROM user_login WHERE user_type='volunteer'"
-        cursor.execute(query)
-        result = cursor.fetchone()
-        count = result[0] if result else 0
-        return count
-    except Exception as e:
-        print(f"Error counting volunteers: {e}")
-        return 0
-    finally:
-        cursor.close()
-        cnxn.close()
-
-# ✅ Get all expenses with documents joined
-def get_all_expenses_with_documents():
-    """Get expenses with linked documents"""
-    cursor, cnxn = get_connection()
-    expenses_list = []
-    
-    try:
-        query = """
-            SELECT 
-                e.id as expense_id,
-                e.voucher_number,
-                e.amount,
-                e.mode_of_payment,
-                e.remark_expenses,
-                e.created_at,
-                e.student_id,
-                s.first_name,
-                s.last_name,
-                d.id as document_id,
-                d.document_source_path,
-                d.document_source_type
-            FROM expenses e
-            JOIN students s ON e.student_id = s.id
-            LEFT JOIN expense_documents ed ON e.id = ed.expense_id
-            LEFT JOIN documents d ON ed.document_id = d.id
-            WHERE e.is_active = 1 AND s.is_active = 1
-            ORDER BY e.created_at DESC
-        """
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        
-        for row in rows:
-            expense = {
-                'expense_id': row.expense_id,
-                'voucher_number': row.voucher_number,
-                'student_id': row.student_id,
-                'first_name': row.first_name,
-                'last_name': row.last_name,
-                'amount': float(row.amount) if row.amount else 0,
-                'mode_of_payment': row.mode_of_payment,
-                'remark': row.remark_expenses,
-                'date': row.created_at.isoformat() if row.created_at else None,
-                'document_id': row.document_id,
-                'document_path': row.document_source_path,
-                'document_type': row.document_source_type
-            }
-            expenses_list.append(expense)
-    
-    except Exception as e:
-        print(f"Error fetching expenses: {e}")
-    finally:
-        cursor.close()
-        cnxn.close()
-    
-    return expenses_list
-
-# ✅ Get student total expenses
-def get_student_total_expenses(student_id):
-    """Get total expenses for a student"""
-    cursor, cnxn = get_connection()
-    
-    try:
-        query = """
-            SELECT 
-                s.first_name,
-                s.last_name,
-                COUNT(e.id) as total_payments,
-                SUM(e.amount) as total_amount,
-                MAX(e.created_at) as last_payment_date
-            FROM expenses e
-            JOIN students s ON e.student_id = s.id
-            WHERE e.student_id = ? AND e.is_active = 1
-            GROUP BY s.first_name, s.last_name
-        """
-        cursor.execute(query, (student_id,))
-        row = cursor.fetchone()
-        
-        if row:
-            return {
-                'first_name': row.first_name,
-                'last_name': row.last_name,
-                'total_payments': row.total_payments,
-                'total_amount': float(row.total_amount) if row.total_amount else 0,
-                'last_payment_date': row.last_payment_date.isoformat() if row.last_payment_date else None
-            }
-        return None
-    
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-    finally:
-        cursor.close()
-        cnxn.close()
-
-# ✅ Get student expenses with documents
-def get_student_expenses_detail(student_id):
-    """Get detailed expenses for a student with documents"""
-    cursor, cnxn = get_connection()
-    expenses = []
-    
-    try:
-        query = """
-            SELECT 
-                e.id as expense_id,
-                e.voucher_number,
-                e.amount,
-                e.mode_of_payment,
-                e.remark_expenses,
-                e.created_at,
-                d.id as document_id,
-                d.document_source_path,
-                d.document_source_type
-            FROM expenses e
-            LEFT JOIN expense_documents ed ON e.id = ed.expense_id
-            LEFT JOIN documents d ON ed.document_id = d.id
-            WHERE e.student_id = ? AND e.is_active = 1
-            ORDER BY e.created_at DESC
-        """
-        cursor.execute(query, (student_id,))
-        rows = cursor.fetchall()
-        
-        for row in rows:
-            expense = {
-                'expense_id': row.expense_id,
-                'voucher_number': row.voucher_number,
-                'amount': float(row.amount) if row.amount else 0,
-                'mode_of_payment': row.mode_of_payment,
-                'remark': row.remark_expenses,
-                'date': row.created_at.isoformat() if row.created_at else None,
-                'document_id': row.document_id,
-                'document_path': row.document_source_path,
-                'document_type': row.document_source_type
-            }
-            expenses.append(expense)
-    
-    except Exception as e:
-        print(f"Error fetching student expenses: {e}")
-    finally:
-        cursor.close()
-        cnxn.close()
-    
-    return expenses
-
-# ✅ Get expense summary by payment mode
-def get_expenses_by_mode():
-    """Get expenses grouped by mode of payment"""
-    cursor, cnxn = get_connection()
-    summary = {}
-    
-    try:
-        query = """
-            SELECT 
-                mode_of_payment,
-                COUNT(id) as count,
-                SUM(amount) as total
-            FROM expenses
-            WHERE is_active = 1
-            GROUP BY mode_of_payment
-        """
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        
-        for row in rows:
-            summary[row.mode_of_payment] = {
-                'count': row.count,
-                'total': float(row.total) if row.total else 0
-            }
-    
-    except Exception as e:
-        print(f"Error: {e}")
-    finally:
-        cursor.close()
-        cnxn.close()
-    
-    return summary

@@ -98,17 +98,6 @@
       <p class="panel-title">Create account</p>
       <p class="panel-sub">Join FOCH — takes less than a minute.</p>
  
-      <!-- 🎯 USER TYPE SELECTOR -->
-      <div class="field">
-        <label for="r-type">Account Type</label>
-        <div class="wrap">
-          <select id="r-type" onchange="onUserTypeChange()">
-            <option value="student">🎓 Student (Basic Access)</option>
-            <option value="volunteer">🤝 Volunteer (Full Access)</option>
-          </select>
-        </div>
-      </div>
- 
       <div class="field">
         <label for="r-user">Username</label>
         <div class="wrap">
@@ -164,20 +153,6 @@
             </svg>
           </button>
         </div>
-      </div>
-
-      <!-- 🎯 REFERRAL CODE FIELD (HIDDEN BY DEFAULT) -->
-      <div class="field" id="referral-field" style="display: none;">
-        <label for="r-code">Referral Code</label>
-        <div class="wrap">
-          <span class="ico">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 4 12 14.01 9 13 2 20 2 2 22 2"/><polyline points="22 4 15 11"/>
-            </svg>
-          </span>
-          <input id="r-code" type="text" placeholder="e.g., VOL-XXXXX" autocomplete="off"/>
-        </div>
-        <p class="hint-sub">Ask a volunteer for a referral code</p>
       </div>
  
       <div id="reg-msg" class="msg"></div>

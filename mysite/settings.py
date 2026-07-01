@@ -4,30 +4,16 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ---------------------------------------------------------------------------
-# SECURITY  — all secrets come from environment variables, never hardcoded
-# ---------------------------------------------------------------------------
-SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key-change-in-production")
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
 
-# DEBUG: default False so a misconfigured server never leaks stack traces.
-# Set DEBUG=True in .env only during local development.
-DEBUG = os.getenv("DEBUG", "False").strip().lower() == "true"
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 
-# ALLOWED_HOSTS: comma-separated in .env, e.g. "SERVER_IP,yourdomain.com"
-_raw_hosts = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1")
-ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(",") if h.strip()]
+# Allow Render domain + localhost
+ALLOWED_HOSTS = ['*']  # or your render URL
 
-# ---------------------------------------------------------------------------
-# JWT  — used by middleware.py (reads settings.JWT_SECRET_KEY)
-# ---------------------------------------------------------------------------
-JWT_SECRET_KEY = os.getenv(
-    "JWT_SECRET_KEY",
-    "change-this-to-a-long-random-secret-in-production",
-)
-
-# ---------------------------------------------------------------------------
 # Application definition
-# ---------------------------------------------------------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -35,13 +21,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'coreapp',
+
+    'coreapp',# ← your app
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # WhiteNoise — serves staticfiles directly from gunicorn (no nginx needed)
-    # Must come directly after SecurityMiddleware
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,8 +34,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # JWT role-based access middleware (no DB / ORM needed)
-    'coreapp.middleware.RoleBasedAccessMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -72,13 +55,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
-# ---------------------------------------------------------------------------
-# Database
-# Django's own internal DB (used for admin, auth, migrations tracking).
-# The application's SQL Server data is accessed directly via pyodbc in
-# dataaccess.py — it does NOT go through Django ORM.
-# SQLite is fine for Django internals during the deferred-DB phase.
-# ---------------------------------------------------------------------------
+# Database (SQLite for simplicity)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -86,57 +63,46 @@ DATABASES = {
     }
 }
 
-# ---------------------------------------------------------------------------
 # Password validation
-# ---------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-# ---------------------------------------------------------------------------
-# Internationalisation
-# ---------------------------------------------------------------------------
+# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# ---------------------------------------------------------------------------
-# Static files  (CSS, JS, images)
-# WhiteNoise compresses and serves them directly — no separate nginx needed.
-# ---------------------------------------------------------------------------
+# settings.py
+
 STATIC_URL = '/static/'
 
-# Where collectstatic puts everything (run once via entrypoint.sh at container start)
+# Where collectstatic will put all files
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Additional directories beyond each app's /static/ folder
+# Optional: if you keep extra static files in a folder
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / "static",
 ]
 
-# WhiteNoise: cache static files forever (they get a hash in the URL)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# ---------------------------------------------------------------------------
-# Media files  (user uploads — expense receipts, documents)
-# The host directory C:\deployments\media is bind-mounted to /app/media.
-# Files written here survive container restarts.
-# ---------------------------------------------------------------------------
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ============================================
+# MEDIA FILES CONFIGURATION (for file uploads)
+# ============================================
+
+# URL prefix for accessing uploaded files
 MEDIA_URL = '/media/'
 
-# Inside the container the bind-mount lands at /app/media.
-# Override via MEDIA_ROOT env var if your layout differs.
-MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", str(BASE_DIR / "media")))
+# Directory where uploaded files will be stored
+MEDIA_ROOT = BASE_DIR / 'media'
 
-# Max upload size: 10 MB
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
-
-# ---------------------------------------------------------------------------
-# Default primary key field type
-# ---------------------------------------------------------------------------
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Maximum file upload size (10MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB in bytes
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB in bytes

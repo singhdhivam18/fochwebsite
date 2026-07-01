@@ -1,0 +1,4 @@
+django
+pyodbc
+gunicorn
+whitenoise
