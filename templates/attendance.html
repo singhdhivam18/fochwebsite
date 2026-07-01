@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance</title>
+    <link rel="stylesheet" href="{% static 'style_attendance.css' %}">
+</head>
+<body>
+    <li><a href="/dashboard">Dashboard</a></li>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Student Attendance</h1>
+            <div class="date-input">
+                <label for="attendance-date">Date:</label>
+                <input type="date" id="attendance-date" required>
+                <button class="load-btn" id="loadBtn" onclick="loadAttendance()">Load</button>
+            </div>
+        </div>
+
+
+        <div class="students-heading">
+            <h2>Students</h2>
+        </div>
+
+        <div class="students-list" id="studentsList">
+            <!-- Students will be dynamically added here -->
+        </div>
+
+        <button class="submit-btn" onclick="submitAttendance()">Submit Attendance</button>
+    </div>
+    <!-- Delete Attendance Section -->
+    <div class="delete-section">
+        <div class="delete-header">
+            <h3>🗑️ Delete Attendance Record</h3>
+        </div>
+        <div class="delete-input-group">
+            <label for="delete-date">Select Date to Delete:</label>
+            <input type="date" id="delete-date" required>
+        </div>
+        <button class="delete-btn" onclick="deleteAttendance()">Delete Attendance</button>
+    </div>
+    </div>
+<script src="{% static 'script.js' %}"></script>
+</body>
+</html>

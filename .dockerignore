@@ -1,0 +1,35 @@
+# Never bake secrets or dev noise into the Docker image
+
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+config.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+env/
+ENV/
+
+# Dev database and generated output (collectstatic runs at container start)
+db.sqlite3
+staticfiles/
+
+# Media uploads (bind-mounted from host at runtime — never inside the image)
+media/
+
+# Logs (bind-mounted from host)
+logs/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.bak
+*.backup
+node_modules/

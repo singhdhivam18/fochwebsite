@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Report - FOCH SMS</title>
+    <link rel="stylesheet" href="{% static 'report.css' %}">
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>💰 Expense Report</h1>
+        <div class="header-actions">
+            <button class="btn" onclick="printReport()">🖨️ Print</button>
+            <button class="btn" onclick="downloadCSV()">📥 Export CSV</button>
+            <button class="btn" onclick="goBack()" style="background: #6c757d;">← Back</button>
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-grid" id="summaryGrid">
+        <div class="summary-card">
+            <h3>Total Expenses</h3>
+            <div class="value" id="totalAmount">₹0</div>
+        </div>
+        <div class="summary-card">
+            <h3>Total Payments</h3>
+            <div class="value" id="totalPayments">0</div>
+        </div>
+        <div class="summary-card">
+            <h3>Total Students</h3>
+            <div class="value" id="totalStudents">0</div>
+        </div>
+        <div class="summary-card">
+            <h3>With Documents</h3>
+            <div class="value" id="withDocuments">0</div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('all-expenses')">📋 All Expenses</button>
+        <button class="tab-btn" onclick="switchTab('by-payment')">💳 By Payment Mode</button>
+    </div>
+
+    <!-- Tab 1: All Expenses -->
+    <div id="all-expenses" class="tab-content active">
+        <div id="loading" class="loading">⏳ Loading expenses...</div>
+        <div id="allExpensesTable" class="table-container" style="display: none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Voucher #</th>
+                        <th>Amount</th>
+                        <th>Payment Mode</th>
+                        <th>Date</th>
+                        <th>Remark</th>
+                        <th>Document</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="expenseTableBody"></tbody>
+            </table>
+        </div>
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <p>📭 No expenses found</p>
+        </div>
+    </div>
+
+    <!-- Tab 2: By Payment Mode -->
+    <div id="by-payment" class="tab-content">
+        <div id="paymentSummary"></div>
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="studentDetailName">Student Expense Details</h2>
+            <span class="close" onclick="closeDetailModal()">&times;</span>
+        </div>
+        <div id="detailBody"></div>
+    </div>
+</div>
+<script src="{% static 'report.js' %}"></script>
+</body>
+</html>

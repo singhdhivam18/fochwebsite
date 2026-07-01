@@ -1,0 +1,212 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SMS Dashboard</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">🏠 SMS</div>
+
+    <ul class="nav-links">
+        <li>Dashboard</li>
+        <li id="nav-ops">Ops</li>
+        <li id="nav-finance">Finance</li>
+        <li id="nav-add-student" onclick="openStudentModal()" style="color: #007bff; font-weight: bold;">+ Add Student</li>
+        <li id="nav-student-records"><a href="students-list">Student Records</a></li>
+        <li id="nav-attendance" style="color: #007bff; font-weight: bold;"><a href="attendance">attendance</a></li>
+        <li id="nav-report"><a href="report" style="color: #007bff; font-weight: bold;">💰 Expense Report</a></li>
+        <li id="nav-referral"><a href="volunteer-panel" style="color: #007bff; font-weight: bold;">referal code generate </a></li>
+    </ul>
+
+    <div class="user">
+        <span id="nav-username"></span> | <a href="#" class="logout-link" onclick="handleLogout(event)">Logout</a>
+    </div>
+</nav>
+
+<!-- Access-denied banner (hidden by default, shown when student tries a blocked URL) -->
+<div id="access-denied-banner" style="display:none; background:#fee2e2; color:#991b1b; padding:10px 20px; text-align:center; font-weight:bold; border-bottom: 2px solid #fca5a5;">
+    ⛔ Access denied — students can only view the Dashboard.
+</div>
+
+<script>
+    // ── Read user info from sessionStorage (set at login) ──────────────────────
+    const userType = sessionStorage.getItem('foch_user_type');
+    const username  = sessionStorage.getItem('foch_username');
+
+    // Show username in navbar
+    const navUser = document.getElementById('nav-username');
+    if (navUser) navUser.textContent = username || '';
+
+    // Show access-denied banner if redirected from a blocked page
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('access_denied') === '1') {
+        document.getElementById('access-denied-banner').style.display = 'block';
+    }
+
+    // ── Hide volunteer-only nav items for students ─────────────────
+    if (userType === 'student') {
+        const volunteerOnlyIds = [
+            'nav-ops', 'nav-finance', 'nav-add-student',
+            'nav-student-records', 'nav-attendance',
+            'nav-report', 'nav-referral'
+        ];
+        volunteerOnlyIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+    }
+    // Volunteers see everything — no changes needed
+</script>
+<div class="container">
+    <div class="cards">
+        <div class="card blue">
+            <h4>No. of Students</h4>
+            <h2 id="totalStudents">0</h2>
+        </div>
+        <div class="card pink">
+            <h4>Upcoming Birthdays</h4>
+            <ul id="birthdayList"></ul>
+        </div>
+        <div class="card orange">
+            <h4>Average Student Attendance (%)</h4>
+            <h2 id="attendance">0%</h2>
+        </div>
+    </div>
+</div>
+
+<div id="studentModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeStudentModal()">&times;</span>
+        <h3>Add New Student</h3>
+        
+        <form id="studentForm">
+            <div class="form-grid">
+                <div class="group">
+                    <label>First Name</label>
+                    <input type="text" name="first_name" required>
+                </div>
+                <div class="group">
+                    <label>Last Name</label>
+                    <input type="text" name="last_name" required>
+                </div>
+                <div class="group">
+                    <label>Date of Birth</label>
+                    <input type="date" name="date_of_birth">
+                </div>
+                <div class="group">
+                    <label>Gender</label>
+                    <select name="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="group">
+                    <label>Is Active?</label>
+                    <select name="is_active">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                 <div class="group">
+                    <label>Is Delete?</label>
+                    <select name="is_delete">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+
+                <div class="group">
+                    <label>Father's Name</label>
+                    <input type="text" name="father_name">
+                </div>
+                <div class="group">
+                    <label>Mother's Name</label>
+                    <input type="text" name="mother_name">
+                </div>
+                <div class="group">
+                    <label>Parent Contact</label>
+                    <input type="text" name="parent_contact_no">
+                </div>
+                <div class="group">
+                    <label>Student Contact</label>
+                    <input type="text" name="student_contact_no">
+                </div>
+
+                <div class="group full-width">
+                    <label>Address</label>
+                    <input type="text" name="address">
+                </div>
+                <div class="group full-width">
+                    <label>Address_location</label>
+                    <input type="text" name="address_location">
+                </div>
+                <div class="group">
+                    <label>Course Pursuing</label>
+                    <input type="text" name="course_pursing">
+                </div>
+                <div class="group">
+                    <label>Source of Income</label>
+                    <input type="text" name="family_source_of_income">
+                </div>
+                <div class="group">
+                    <label>Monthly Income</label>
+                    <input type="number" name="family_monthly_income">
+                </div>
+                 <div class="group">
+                    <label>Residential Status</label>
+                    <input type="text" name="residentail_status">
+                </div>
+                <div class="group">
+                    <label>Additional Assets</label>
+                    <input type="text" name="additional_assets">
+                </div>
+                 <div class="group">
+                    <label>Total Monthly Avg</label>
+                    <input type="number" name="total_montly_average">
+                </div>
+                <div class="group">
+                    <label>Family Members</label>
+                    <input type="number" name="family_member_count">
+                </div>
+
+                <div class="group">
+                    <label>Date of Joining</label>
+                    <input type="date" name="date_of_joining">
+                </div>
+                <div class="group">
+                    <label>support type</label>
+                    <select name="support">
+                        <option value="Full">FULL</option>
+                        <option value="half">HALF</option>
+                        <option value="NULL">NULL</option>
+                    </select>
+                </div>
+
+                <div class="group">
+                    <label>Study At</label>
+                    <input type="text" name="study_at">
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Register Student</button>
+        </form>
+    </div>
+</div>
+
+
+<footer>
+    © 2026 - FOCH.WebApp | Privacy
+</footer>
+
+<script src="{% static 'script.js' %}"></script>
+<script>
+    const csrftoken = "{{ csrf_token }}";
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    border-radius: 15px 15px 0 0;
+}
+
+.header h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.date-input {
+    margin-top: 15px;
+}
+
+.date-input label {
+    font-size: 1.1em;
+    margin-right: 10px;
+}
+
+.date-input input[type="date"] {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+.students-heading {
+    background: #f8f9fa;
+    padding: 20px 30px;
+    border-bottom: 3px solid #667eea;
+}
+
+.students-heading h2 {
+    color: #333;
+    font-size: 1.5em;
+}
+
+.students-list {
+    padding: 20px 30px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.student-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    margin-bottom: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 5px solid #667eea;
+}
+
+.student-name {
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #333;
+}
+
+.attendance-options {
+    display: flex;
+    gap: 25px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.radio-option input[type="radio"] {
+    width: 20px;
+    height: 20px;
+}
+
+.radio-option label {
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.radio-option.present label {
+    color: #28a745;
+}
+
+.radio-option.absent label {
+    color: #dc3545;
+}
+
+.submit-btn {
+    margin: 20px 30px 30px;
+    width: calc(100% - 60px);
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.delete-section {
+    margin: 30px;
+    padding: 25px;
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 10px;
+}
+
+.delete-header h3 {
+    color: #d63031;
+    margin-bottom: 20px;
+    font-size: 1.3em;
+}
+
+.delete-input-group {
+    margin-bottom: 15px;
+}
+
+.delete-input-group label {
+    font-weight: 600;
+    color: #333;
+    margin-right: 10px;
+}
+
+.delete-input-group input[type="date"] {
+    padding: 10px 15px;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+.delete-btn {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #d63031 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+}
+.load-btn {
+    padding: 10px 20px;
+    background: white;
+    color: #667eea;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: all 0.2s;
+}
+
+.load-btn:hover {
+    background: #f0f0ff;
+}
+
+.load-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

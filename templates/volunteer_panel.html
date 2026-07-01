@@ -1,0 +1,87 @@
+name=volunteer_panel.html
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Panel - FOCH</title>
+    <link rel="stylesheet" href="{% static 'voluteer.css' %}">
+</head>
+<body>
+
+<div class="navbar-top">
+    <div>
+        <h2>🤝 Volunteer Panel</h2>
+        <p id="userInfo">Loading...</p>
+    </div>
+    <button class="logout-btn" onclick="handleLogout()">Logout</button>
+</div>
+
+<div class="container">
+    
+    <!-- Generate New Code -->
+    <div class="card">
+        <div class="section-title">
+            ✨ Generate New Referral Code
+        </div>
+        
+        <div id="genMessage" class="message"></div>
+        
+        <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
+            Generate a unique referral code to share with someone interested in joining as a volunteer.
+        </p>
+        
+        <button class="btn" id="genBtn" onclick="generateNewCode()">
+            <span id="genText">Generate Code</span>
+            <span id="genSpinner" class="loading" style="display: none; margin-left: 10px;"></span>
+        </button>
+    </div>
+    
+    <!-- My Referral Codes -->
+    <div class="card">
+        <div class="section-title">
+            📋 My Referral Codes
+        </div>
+        
+        <div id="listMessage" class="message"></div>
+        
+        <ul class="code-list" id="codeList">
+            <div class="empty-state">
+                <p>⏳ Loading codes...</p>
+            </div>
+        </ul>
+    </div>
+    
+    <!-- Instructions -->
+    <div class="card">
+        <div class="section-title">
+            📖 How to Share
+        </div>
+        
+        <div style="color: #666; font-size: 14px; line-height: 1.8;">
+            <ol style="margin-left: 20px;">
+                <li style="margin-bottom: 12px;">
+                    <strong>Generate a code</strong> using the button above
+                </li>
+                <li style="margin-bottom: 12px;">
+                    <strong>Copy the code</strong> (click the copy button next to the code)
+                </li>
+                <li style="margin-bottom: 12px;">
+                    <strong>Share with someone</strong> via email, message, or in person
+                </li>
+                <li style="margin-bottom: 12px;">
+                    <strong>They register</strong> on the login page, select "Volunteer", and paste the code
+                </li>
+                <li style="margin-bottom: 0px;">
+                    <strong>Done!</strong> New volunteer account created
+                </li>
+            </ol>
+        </div>
+    </div>
+
+</div>
+<script src="{% static 'voluteer.js' %}"></script>
+</body>
+</html>

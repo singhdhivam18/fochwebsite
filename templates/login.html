@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FOCH — Auth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="{% static 'login_style.css' %}">
+</head>
+<body>
+ 
+<!-- ═══════════ LEFT ═══════════ -->
+<aside class="left">
+  <div class="logo">
+    <div class="logo-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+      </svg>
+    </div>
+    <span class="logo-name">FOCH<span>.</span></span>
+  </div>
+ 
+  <div class="left-body">
+    <p class="tagline" id="left-tagline">Write.<br/><em>Create.</em><br/>Belong.</p>
+    <p class="tagline-sub" id="left-sub">
+      A space for those who think in ink.<br/>
+      Credentials hashed, salted,<br/>stored with purpose.
+    </p>
+  </div>
+ 
+  <div class="left-foot">
+    <span class="dot"></span>
+    <span id="left-foot-txt">Django API · /api/auth/login/</span>
+  </div>
+</aside>
+ 
+<!-- ═══════════ RIGHT ═══════════ -->
+<main class="right">
+  <div class="box">
+ 
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="pill" id="pill"></div>
+      <button class="tab active" id="tab-login"    onclick="switchTab('login')">Sign In</button>
+      <button class="tab"        id="tab-register" onclick="switchTab('register')">Register</button>
+    </div>
+ 
+    <!-- ── LOGIN PANEL ── -->
+    <div class="panel active" id="panel-login">
+      <p class="panel-badge">Sign In</p>
+      <p class="panel-title">Welcome back</p>
+      <p class="panel-sub">Enter your credentials to continue.</p>
+ 
+      <div class="field">
+        <label for="l-user">Username</label>
+        <div class="wrap">
+          <span class="ico">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+          </span>
+          <input id="l-user" type="text" placeholder="your_username" autocomplete="username"/>
+        </div>
+      </div>
+ 
+      <div class="field">
+        <label for="l-pass">Password</label>
+        <div class="wrap">
+          <span class="ico">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <input id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password"/>
+          <button class="eye" onclick="toggleEye('l-pass','eye-l')" aria-label="Toggle password">
+            <svg id="eye-l" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+ 
+      <div id="login-msg" class="msg"></div>
+ 
+      <button class="btn" id="btn-login" onclick="handleLogin()">
+        <span class="btn-text">Sign In</span>
+        <span class="spin"></span>
+      </button>
+ 
+      <p class="hint">No account? <a onclick="switchTab('register')">Create one</a></p>
+    </div>
+ 
+    <!-- ── REGISTER PANEL ── -->
+    <div class="panel" id="panel-register">
+      <p class="panel-badge">Register</p>
+      <p class="panel-title">Create account</p>
+      <p class="panel-sub">Join FOCH — takes less than a minute.</p>
+ 
+      <!-- 🎯 USER TYPE SELECTOR -->
+      <div class="field">
+        <label for="r-type">Account Type</label>
+        <div class="wrap">
+          <select id="r-type" onchange="onUserTypeChange()">
+            <option value="student">🎓 Student (Basic Access)</option>
+            <option value="volunteer">🤝 Volunteer (Full Access)</option>
+          </select>
+        </div>
+      </div>
+ 
+      <div class="field">
+        <label for="r-user">Username</label>
+        <div class="wrap">
+          <span class="ico">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+          </span>
+          <input id="r-user" type="text" placeholder="choose_a_username" autocomplete="username"/>
+        </div>
+      </div>
+ 
+      <div class="field">
+        <label for="r-pass">Password</label>
+        <div class="wrap">
+          <span class="ico">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <input id="r-pass" type="password" placeholder="min. 4 characters"
+                 autocomplete="new-password" oninput="onStrength()"/>
+          <button class="eye" onclick="toggleEye('r-pass','eye-r')" aria-label="Toggle password">
+            <svg id="eye-r" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <!-- strength bar always rendered so layout stays stable -->
+        <div class="sbar">
+          <div class="seg" id="s1"></div>
+          <div class="seg" id="s2"></div>
+          <div class="seg" id="s3"></div>
+          <div class="seg" id="s4"></div>
+        </div>
+        <p class="stxt" id="stxt"></p>
+      </div>
+ 
+      <div class="field">
+        <label for="r-cf">Confirm Password</label>
+        <div class="wrap">
+          <span class="ico">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </span>
+          <input id="r-cf" type="password" placeholder="••••••••"
+                 autocomplete="new-password" oninput="onConfirm()"/>
+          <button class="eye" onclick="toggleEye('r-cf','eye-cf')" aria-label="Toggle password">
+            <svg id="eye-cf" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 🎯 REFERRAL CODE FIELD (HIDDEN BY DEFAULT) -->
+      <div class="field" id="referral-field" style="display: none;">
+        <label for="r-code">Referral Code</label>
+        <div class="wrap">
+          <span class="ico">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 4 12 14.01 9 13 2 20 2 2 22 2"/><polyline points="22 4 15 11"/>
+            </svg>
+          </span>
+          <input id="r-code" type="text" placeholder="e.g., VOL-XXXXX" autocomplete="off"/>
+        </div>
+        <p class="hint-sub">Ask a volunteer for a referral code</p>
+      </div>
+ 
+      <div id="reg-msg" class="msg"></div>
+ 
+      <button class="btn" id="btn-reg" onclick="handleRegister()">
+        <span class="btn-text">Create Account</span>
+        <span class="spin"></span>
+      </button>
+ 
+      <p class="hint">Have an account? <a onclick="switchTab('login')">Sign in</a></p>
+    </div>
+ 
+  </div><!-- /.box -->
+</main>
+<script src="{% static 'script_login.js' %}"></script>
+</body>
+</html>
